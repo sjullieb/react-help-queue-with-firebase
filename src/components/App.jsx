@@ -4,14 +4,26 @@ import TicketList from './TicketList';
 import NewTicketControl from './NewTicketControl';
 import Error404 from './Error404';
 import { Switch, Route, withRouter } from 'react-router-dom';
-import Moment from 'moment';
 import Admin from './Admin';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import constants from './../constants';
+import * as actions from './../actions';
+import Moment from 'Moment';
+
 const { c } = constants;
 
 class App extends React.Component {
+  
+  componentWillMount() {
+    const { dispatch } = this.props;
+    const { watchFirebaseTicketsRef } = actions;
+    dispatch(watchFirebaseTicketsRef());
+    // console.log('props');
+    
+    // console.log(this.props);
+  
+  }
 
   componentDidMount() {
     this.waitTimeUpdateTimer = setInterval(() =>
@@ -28,7 +40,7 @@ class App extends React.Component {
     const { dispatch } = this.props;
     Object.keys(this.props.masterTicketList).map(ticketId => {
       const ticket = this.props.masterTicketList[ticketId];
-      const newFormattedWaitTime = ticket.timeOpen.fromNow(true);
+      const newFormattedWaitTime = new Moment(ticket.timeOpen.fromNow(true));
       const action = {
         type: c.UPDATE_TIME,
         id: ticketId,
